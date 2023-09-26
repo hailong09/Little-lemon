@@ -1,22 +1,35 @@
-import React from 'react'
 import Logo from '../images/Logo.svg'
 import { Disclosure } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
+import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
-const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
-    { name: 'Menu', href: '/menu' },
-    { name: 'Reservations', href: '#' },
-    { name: 'Order Online', href: '#' },
-    { name: 'Login', href: '#' },
+
+export const navigation = [
+    { name: 'Home', href: '/', current: true },
+    { name: 'About', href: '/about', current: false },
+    { name: 'Menu', href: '/menu', current: false },
+    { name: 'Reservations', href: '/reservations', current: false },
+    { name: 'Order Online', href: '/order', current: false },
+    { name: 'Login', href: '/login', current: false },
 ]
 
-function classNames(...classes) {
+export function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
 const Nav = () => {
+    const [navigate, setNavigate] = useState(navigation);
+    const location = useLocation()
+    useEffect(() => {
+        const deactivatePath = navigate.find(n => n.current === true);
+        deactivatePath.current = false;
+        const currentPath = navigate.find(n => n.href === location.pathname);
+        currentPath.current = true;
+        setNavigate([deactivatePath, currentPath, ...navigate])
+
+    }, [location])
+
     return (
         <header>
             <Disclosure as="nav" className="bg-white">
@@ -54,7 +67,7 @@ const Nav = () => {
                                                     key={item.name}
                                                     href={item.href}
                                                     className={classNames(
-                                                        'text-gray-500 hover:bg-gray-700 hover:text-white',
+                                                        item.current ? 'bg-gray-900 text-white' : 'text-gray-500 hover:bg-gray-700 hover:text-white',
                                                         'rounded-md px-3 py-2 text-sm font-medium'
                                                     )}
                                                 >
@@ -75,7 +88,7 @@ const Nav = () => {
                                         as="a"
                                         href={item.href}
                                         className={classNames(
-                                            'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                            item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                                             'block rounded-md px-3 py-2 text-base font-medium'
                                         )}
 
